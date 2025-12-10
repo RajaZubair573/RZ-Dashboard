@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { 
-  Users as UsersIcon, 
-  UserPlus, 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  Mail, 
-  Phone, 
-  User, 
-  Shield, 
-  Edit, 
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+  Users as UsersIcon,
+  UserPlus,
+  Search,
+  Filter,
+  MoreVertical,
+  Mail,
+  Phone,
+  User,
+  Shield,
+  Edit,
   Trash2,
   Check,
   X,
   ChevronDown,
   ChevronUp
-} from 'lucide-react';
+} from "lucide-react";
 
-type UserRole = 'admin' | 'editor' | 'viewer' | 'user';
-type UserStatus = 'active' | 'inactive' | 'suspended' | 'pending';
+type UserRole = "admin" | "editor" | "viewer" | "user";
+type UserStatus = "active" | "inactive" | "suspended" | "pending";
 
 interface User {
   id: string;
@@ -37,17 +37,17 @@ interface User {
 }
 
 const roleColors = {
-  admin: 'bg-purple-100 text-purple-800',
-  editor: 'bg-blue-100 text-blue-800',
-  viewer: 'bg-green-100 text-green-800',
-  user: 'bg-gray-100 text-gray-800'
+  admin: "bg-purple-100 text-purple-800",
+  editor: "bg-blue-100 text-blue-800",
+  viewer: "bg-green-100 text-green-800",
+  user: "bg-gray-100 text-gray-800"
 };
 
 const statusColors = {
-  active: 'bg-green-100 text-green-800',
-  inactive: 'bg-gray-100 text-gray-800',
-  suspended: 'bg-red-100 text-red-800',
-  pending: 'bg-yellow-100 text-yellow-800'
+  active: "bg-green-100 text-green-800",
+  inactive: "bg-gray-100 text-gray-800",
+  suspended: "bg-red-100 text-red-800",
+  pending: "bg-yellow-100 text-yellow-800"
 };
 
 const statusIcons = {
@@ -58,221 +58,229 @@ const statusIcons = {
 };
 
 const getInitials = (name: string) => {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 };
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([
     {
-      id: '1',
-      name: 'Alex Johnson',
-      email: 'alex.johnson@example.com',
-      role: 'admin',
-      status: 'active',
-      avatar: '',
-      lastActive: '2023-12-08T14:30:00',
-      joinDate: '2022-01-15',
-      phone: '+1 (555) 123-4567',
-      department: 'Engineering'
+      id: "1",
+      name: "Alex Johnson",
+      email: "alex.johnson@example.com",
+      role: "admin",
+      status: "active",
+      avatar: "",
+      lastActive: "2023-12-08T14:30:00",
+      joinDate: "2022-01-15",
+      phone: "+1 (555) 123-4567",
+      department: "Engineering"
     },
     {
-      id: '2',
-      name: 'Sarah Williams',
-      email: 'sarah.w@example.com',
-      role: 'editor',
-      status: 'active',
-      avatar: '',
-      lastActive: '2023-12-09T09:15:00',
-      joinDate: '2022-03-22',
-      phone: '+1 (555) 234-5678',
-      department: 'Marketing'
+      id: "2",
+      name: "Sarah Williams",
+      email: "sarah.w@example.com",
+      role: "editor",
+      status: "active",
+      avatar: "",
+      lastActive: "2023-12-09T09:15:00",
+      joinDate: "2022-03-22",
+      phone: "+1 (555) 234-5678",
+      department: "Marketing"
     },
     {
-      id: '3',
-      name: 'Michael Chen',
-      email: 'michael.chen@example.com',
-      role: 'viewer',
-      status: 'inactive',
-      avatar: '',
-      lastActive: '2023-11-28T16:45:00',
-      joinDate: '2023-05-10',
-      department: 'Sales'
+      id: "3",
+      name: "Michael Chen",
+      email: "michael.chen@example.com",
+      role: "viewer",
+      status: "inactive",
+      avatar: "",
+      lastActive: "2023-11-28T16:45:00",
+      joinDate: "2023-05-10",
+      department: "Sales"
     },
     {
-      id: '4',
-      name: 'Emily Rodriguez',
-      email: 'emily.r@example.com',
-      role: 'user',
-      status: 'pending',
-      avatar: '',
-      lastActive: '2023-12-05T11:20:00',
-      joinDate: '2023-10-15',
-      phone: '+1 (555) 345-6789',
-      department: 'Support'
+      id: "4",
+      name: "Emily Rodriguez",
+      email: "emily.r@example.com",
+      role: "user",
+      status: "pending",
+      avatar: "",
+      lastActive: "2023-12-05T11:20:00",
+      joinDate: "2023-10-15",
+      phone: "+1 (555) 345-6789",
+      department: "Support"
     },
     {
-      id: '5',
-      name: 'David Kim',
-      email: 'david.kim@example.com',
-      role: 'editor',
-      status: 'suspended',
-      avatar: '',
-      lastActive: '2023-11-15T13:10:00',
-      joinDate: '2021-11-30',
-      phone: '+1 (555) 456-7890',
-      department: 'Product'
+      id: "5",
+      name: "David Kim",
+      email: "david.kim@example.com",
+      role: "editor",
+      status: "suspended",
+      avatar: "",
+      lastActive: "2023-11-15T13:10:00",
+      joinDate: "2021-11-30",
+      phone: "+1 (555) 456-7890",
+      department: "Product"
     }
   ]);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<UserRole | 'all'>('all');
-  const [statusFilter, setStatusFilter] = useState<UserStatus | 'all'>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState<UserRole | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<UserStatus | "all">("all");
   const [showNewUserForm, setShowNewUserForm] = useState(false);
-  const [sortConfig, setSortConfig] = useState<{key: keyof User; direction: 'asc' | 'desc'} | null>(null);
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof User;
+    direction: "asc" | "desc";
+  } | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showUserDetails, setShowUserDetails] = useState(false);
 
-  const [newUser, setNewUser] = useState<Omit<User, 'id' | 'avatar' | 'lastActive' | 'joinDate'>>({
-    name: '',
-    email: '',
-    role: 'user',
-    status: 'pending',
-    phone: '',
-    department: ''
+  const [newUser, setNewUser] = useState<Omit<User, "id" | "avatar" | "lastActive" | "joinDate">>({
+    name: "",
+    email: "",
+    role: "user",
+    status: "pending",
+    phone: "",
+    department: ""
   });
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-    const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
-    
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    const matchesStatus = statusFilter === "all" || user.status === statusFilter;
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
   const sortedUsers = [...filteredUsers].sort((a, b) => {
     if (!sortConfig) return 0;
-    
+
     const aValue = a[sortConfig.key];
     const bValue = b[sortConfig.key];
-    
-    if (aValue < bValue) {
-      return sortConfig.direction === 'asc' ? -1 : 1;
-    }
-    if (aValue > bValue) {
-      return sortConfig.direction === 'asc' ? 1 : -1;
+
+    if (aValue && bValue) {
+      if (aValue < bValue) {
+        return sortConfig.direction === "asc" ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === "asc" ? 1 : -1;
+      }
     }
     return 0;
   });
 
   const requestSort = (key: keyof User) => {
-    let direction: 'asc' | 'desc' = 'asc';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
     }
     setSortConfig({ key, direction });
   };
 
   const addUser = () => {
     if (!newUser.name || !newUser.email) {
-      toast.error('Validation Error', {
-        description: 'Name and email are required fields.'
+      toast.error("Validation Error", {
+        description: "Name and email are required fields."
       });
       return;
     }
-    
+
     const user: User = {
       ...newUser,
       id: Date.now().toString(),
-      avatar: '',
+      avatar: "",
       lastActive: new Date().toISOString(),
-      joinDate: new Date().toISOString().split('T')[0]
+      joinDate: new Date().toISOString().split("T")[0]
     };
-    
+
     setUsers([...users, user]);
-    
-    toast.success('User Added', {
+
+    toast.success("User Added", {
       description: `${newUser.name} has been added successfully.`,
       action: {
-        label: 'Undo',
+        label: "Undo",
         onClick: () => {
-          setUsers(prev => prev.filter(u => u.id !== user.id));
-          toast.success('Action Reverted', {
-            description: 'The user was not added.'
+          setUsers((prev) => prev.filter((u) => u.id !== user.id));
+          toast.success("Action Reverted", {
+            description: "The user was not added."
           });
-        },
-      },
+        }
+      }
     });
-    
+
     setNewUser({
-      name: '',
-      email: '',
-      role: 'user',
-      status: 'pending',
-      phone: '',
-      department: ''
+      name: "",
+      email: "",
+      role: "user",
+      status: "pending",
+      phone: "",
+      department: ""
     });
     setShowNewUserForm(false);
   };
 
   const updateUserStatus = (userId: string, newStatus: UserStatus) => {
-    const user = users.find(u => u.id === userId);
+    const user = users.find((u) => u.id === userId);
     const oldStatus = user?.status;
-    
-    setUsers(users.map(user => 
-      user.id === userId ? { ...user, status: newStatus } : user
-    ));
-    
-    toast.success('Status Updated', {
+
+    setUsers(users.map((user) => (user.id === userId ? { ...user, status: newStatus } : user)));
+
+    toast.success("Status Updated", {
       description: `${user?.name}'s status changed from ${oldStatus} to ${newStatus}.`,
       action: {
-        label: 'Undo',
+        label: "Undo",
         onClick: () => {
-          setUsers(prev => prev.map(u => 
-            u.id === userId ? { ...u, status: oldStatus as UserStatus } : u
-          ));
-          toast.info('Action Reverted', {
+          setUsers((prev) =>
+            prev.map((u) => (u.id === userId ? { ...u, status: oldStatus as UserStatus } : u))
+          );
+          toast.info("Action Reverted", {
             description: `Reverted ${user?.name}'s status back to ${oldStatus}.`
           });
-        },
-      },
+        }
+      }
     });
   };
 
   const deleteUser = (userId: string) => {
-    const userToDelete = users.find(user => user.id === userId);
-    
+    const userToDelete = users.find((user) => user.id === userId);
+
     const deleteAction = () => {
-      setUsers(prevUsers => {
-        const updatedUsers = prevUsers.filter(user => user.id !== userId);
+      setUsers((prevUsers) => {
+        const updatedUsers = prevUsers.filter((user) => user.id !== userId);
         return updatedUsers;
       });
-      
-      toast.success('User Deleted', {
+
+      toast.success("User Deleted", {
         description: `${userToDelete?.name} has been removed from the system.`,
         action: {
-          label: 'Undo',
+          label: "Undo",
           onClick: () => {
             if (userToDelete) {
-              setUsers(prev => [...prev, userToDelete]);
-              toast.success('User Restored', {
+              setUsers((prev) => [...prev, userToDelete]);
+              toast.success("User Restored", {
                 description: `${userToDelete.name} has been restored.`
               });
             }
-          },
-        },
+          }
+        }
       });
     };
-    
+
     // Show confirmation toast instead of native alert
-    toast.warning('Confirm Deletion', {
+    toast.warning("Confirm Deletion", {
       description: `Are you sure you want to delete ${userToDelete?.name}?`,
       action: {
-        label: 'Delete',
-        onClick: deleteAction,
+        label: "Delete",
+        onClick: deleteAction
       },
       cancel: {
-        label: 'Cancel',
+        label: "Cancel",
         onClick: () => {}
       }
     });
@@ -317,11 +325,11 @@ export default function UsersPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
+
           <select
             className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value as UserRole | 'all')}
+            onChange={(e) => setRoleFilter(e.target.value as UserRole | "all")}
           >
             <option value="all">All Roles</option>
             <option value="admin">Admin</option>
@@ -333,7 +341,7 @@ export default function UsersPage() {
           <select
             className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as UserStatus | 'all')}
+            onChange={(e) => setStatusFilter(e.target.value as UserStatus | "all")}
           >
             <option value="all">All Statuses</option>
             <option value="active">Active</option>
@@ -355,60 +363,64 @@ export default function UsersPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th 
-                  scope="col" 
+                <th
+                  scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => requestSort('name')}
+                  onClick={() => requestSort("name")}
                 >
                   <div className="flex items-center">
                     User
-                    {sortConfig?.key === 'name' && (
-                      sortConfig.direction === 'asc' ? 
-                      <ChevronUp className="ml-1 w-4 h-4" /> : 
-                      <ChevronDown className="ml-1 w-4 h-4" />
-                    )}
+                    {sortConfig?.key === "name" &&
+                      (sortConfig.direction === "asc" ? (
+                        <ChevronUp className="ml-1 w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="ml-1 w-4 h-4" />
+                      ))}
                   </div>
                 </th>
-                <th 
-                  scope="col" 
+                <th
+                  scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  onClick={() => requestSort('role')}
+                  onClick={() => requestSort("role")}
                 >
                   <div className="flex items-center">
                     Role
-                    {sortConfig?.key === 'role' && (
-                      sortConfig.direction === 'asc' ? 
-                      <ChevronUp className="ml-1 w-4 h-4" /> : 
-                      <ChevronDown className="ml-1 w-4 h-4" />
-                    )}
+                    {sortConfig?.key === "role" &&
+                      (sortConfig.direction === "asc" ? (
+                        <ChevronUp className="ml-1 w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="ml-1 w-4 h-4" />
+                      ))}
                   </div>
                 </th>
-                <th 
-                  scope="col" 
+                <th
+                  scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  onClick={() => requestSort('status')}
+                  onClick={() => requestSort("status")}
                 >
                   <div className="flex items-center">
                     Status
-                    {sortConfig?.key === 'status' && (
-                      sortConfig.direction === 'asc' ? 
-                      <ChevronUp className="ml-1 w-4 h-4" /> : 
-                      <ChevronDown className="ml-1 w-4 h-4" />
-                    )}
+                    {sortConfig?.key === "status" &&
+                      (sortConfig.direction === "asc" ? (
+                        <ChevronUp className="ml-1 w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="ml-1 w-4 h-4" />
+                      ))}
                   </div>
                 </th>
-                <th 
-                  scope="col" 
+                <th
+                  scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  onClick={() => requestSort('lastActive')}
+                  onClick={() => requestSort("lastActive")}
                 >
                   <div className="flex items-center">
                     Last Active
-                    {sortConfig?.key === 'lastActive' && (
-                      sortConfig.direction === 'asc' ? 
-                      <ChevronUp className="ml-1 w-4 h-4" /> : 
-                      <ChevronDown className="ml-1 w-4 h-4" />
-                    )}
+                    {sortConfig?.key === "lastActive" &&
+                      (sortConfig.direction === "asc" ? (
+                        <ChevronUp className="ml-1 w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="ml-1 w-4 h-4" />
+                      ))}
                   </div>
                 </th>
                 <th scope="col" className="relative px-6 py-3">
@@ -420,7 +432,7 @@ export default function UsersPage() {
               {sortedUsers.length > 0 ? (
                 sortedUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
-                    <td 
+                    <td
                       className="px-6 py-4 whitespace-nowrap cursor-pointer"
                       onClick={() => viewUserDetails(user)}
                     >
@@ -435,7 +447,11 @@ export default function UsersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${roleColors[user.role]}`}>
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          roleColors[user.role]
+                        }`}
+                      >
                         {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                       </span>
                     </td>
@@ -457,18 +473,23 @@ export default function UsersPage() {
                         </button>
                         <div className="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
                           <div className="py-1">
-                            <button 
+                            <button
                               onClick={() => viewUserDetails(user)}
                               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                               <User className="mr-2 h-4 w-4" />
                               View Profile
                             </button>
-                            <button 
-                              onClick={() => updateUserStatus(user.id, user.status === 'active' ? 'suspended' : 'active')}
+                            <button
+                              onClick={() =>
+                                updateUserStatus(
+                                  user.id,
+                                  user.status === "active" ? "suspended" : "active"
+                                )
+                              }
                               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
-                              {user.status === 'active' ? (
+                              {user.status === "active" ? (
                                 <>
                                   <X className="mr-2 h-4 w-4 text-red-500" />
                                   Suspend
@@ -480,7 +501,7 @@ export default function UsersPage() {
                                 </>
                               )}
                             </button>
-                            <button 
+                            <button
                               onClick={() => deleteUser(user.id)}
                               className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                             >
@@ -518,18 +539,18 @@ export default function UsersPage() {
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={newUser.name}
-                    onChange={(e) => setNewUser({...newUser, name: e.target.value})}
+                    onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
                     placeholder="John Doe"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                   <input
                     type="email"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={newUser.email}
-                    onChange={(e) => setNewUser({...newUser, email: e.target.value})}
+                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                     placeholder="john@example.com"
                   />
                 </div>
@@ -540,7 +561,7 @@ export default function UsersPage() {
                     <select
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       value={newUser.role}
-                      onChange={(e) => setNewUser({...newUser, role: e.target.value as UserRole})}
+                      onChange={(e) => setNewUser({ ...newUser, role: e.target.value as UserRole })}
                     >
                       <option value="user">User</option>
                       <option value="admin">Admin</option>
@@ -554,7 +575,9 @@ export default function UsersPage() {
                     <select
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       value={newUser.status}
-                      onChange={(e) => setNewUser({...newUser, status: e.target.value as UserStatus})}
+                      onChange={(e) =>
+                        setNewUser({ ...newUser, status: e.target.value as UserStatus })
+                      }
                     >
                       <option value="pending">Pending</option>
                       <option value="active">Active</option>
@@ -564,23 +587,27 @@ export default function UsersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone (Optional)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone (Optional)
+                  </label>
                   <input
                     type="tel"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={newUser.phone}
-                    onChange={(e) => setNewUser({...newUser, phone: e.target.value})}
+                    onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
                     placeholder="+1 (555) 000-0000"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Department (Optional)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Department (Optional)
+                  </label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={newUser.department}
-                    onChange={(e) => setNewUser({...newUser, department: e.target.value})}
+                    onChange={(e) => setNewUser({ ...newUser, department: e.target.value })}
                     placeholder="e.g., Engineering, Marketing"
                   />
                 </div>
@@ -617,10 +644,14 @@ export default function UsersPage() {
                   <p className="text-gray-500">{selectedUser.email}</p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${statusColors[selectedUser.status]}`}>
+                  <span
+                    className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                      statusColors[selectedUser.status]
+                    }`}
+                  >
                     {selectedUser.status.charAt(0).toUpperCase() + selectedUser.status.slice(1)}
                   </span>
-                  <button 
+                  <button
                     onClick={() => setShowUserDetails(false)}
                     className="text-gray-400 hover:text-gray-600"
                   >
@@ -639,7 +670,11 @@ export default function UsersPage() {
                     <div>
                       <p className="text-sm text-gray-500">Role</p>
                       <p className="font-medium">
-                        <span className={`px-2 py-1 text-xs rounded-full ${roleColors[selectedUser.role]}`}>
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${
+                            roleColors[selectedUser.role]
+                          }`}
+                        >
                           {selectedUser.role.charAt(0).toUpperCase() + selectedUser.role.slice(1)}
                         </span>
                       </p>
@@ -691,16 +726,18 @@ export default function UsersPage() {
                     Permissions
                   </h3>
                   <div className="space-y-2">
-                    {selectedUser.role === 'admin' && (
+                    {selectedUser.role === "admin" && (
                       <p className="text-sm">Full access to all features and settings</p>
                     )}
-                    {selectedUser.role === 'editor' && (
-                      <p className="text-sm">Can create and edit content, but cannot manage users or system settings</p>
+                    {selectedUser.role === "editor" && (
+                      <p className="text-sm">
+                        Can create and edit content, but cannot manage users or system settings
+                      </p>
                     )}
-                    {selectedUser.role === 'viewer' && (
+                    {selectedUser.role === "viewer" && (
                       <p className="text-sm">Can view content but cannot make changes</p>
                     )}
-                    {selectedUser.role === 'user' && (
+                    {selectedUser.role === "user" && (
                       <p className="text-sm">Basic access with limited permissions</p>
                     )}
                   </div>
@@ -710,16 +747,19 @@ export default function UsersPage() {
               <div className="mt-8 pt-6 border-t border-gray-200 flex justify-end space-x-3">
                 <button
                   onClick={() => {
-                    updateUserStatus(selectedUser.id, selectedUser.status === 'active' ? 'suspended' : 'active');
+                    updateUserStatus(
+                      selectedUser.id,
+                      selectedUser.status === "active" ? "suspended" : "active"
+                    );
                     setShowUserDetails(false);
                   }}
                   className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                    selectedUser.status === 'active'
-                      ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                      : 'bg-green-100 text-green-700 hover:bg-green-200'
+                    selectedUser.status === "active"
+                      ? "bg-red-100 text-red-700 hover:bg-red-200"
+                      : "bg-green-100 text-green-700 hover:bg-green-200"
                   }`}
                 >
-                  {selectedUser.status === 'active' ? 'Suspend User' : 'Activate User'}
+                  {selectedUser.status === "active" ? "Suspend User" : "Activate User"}
                 </button>
                 <button
                   onClick={() => {
