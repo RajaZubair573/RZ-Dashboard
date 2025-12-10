@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, ChangeEvent, useEffect } from 'react';
-import { User, Mail, MapPin, Briefcase, Edit, Save, X, Camera, Plus, Globe, Twitter, Github, Linkedin } from 'lucide-react';
+import { User, Mail, MapPin, Briefcase, Edit, Save, X, Camera, Plus, Globe, Twitter, Github, Linkedin, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProfilePage() {

@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+import { Suspense } from 'react';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -29,7 +31,34 @@ ChartJS.register(
   ArcElement
 );
 
-const AnalyticsPage = () => {
+// Client component wrapper with error boundary
+function AnalyticsContent() {
+  // This will be caught by the error boundary if it throws
+  if (typeof window === 'undefined') {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-gray-500 text-sm font-medium">Loading...</div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="space-y-8">
+      <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
+      <Suspense fallback={
+        <div className="flex justify-center items-center h-screen">
+          <div className="text-gray-500 text-sm font-medium">Loading...</div>
+        </div>
+      }>
+        <AnalyticsCharts />
+      </Suspense>
+    </div>
+  );
+}
+
+// Main charts component
+function AnalyticsCharts() {
+  // Sample data for the bar chart
   // Sample data for the bar chart
   const barData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -366,4 +395,42 @@ const AnalyticsPage = () => {
   );
 };
 
-export default AnalyticsPage;
+// Error boundary component
+class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
+  constructor(props: {children: React.ReactNode}) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-4 bg-red-50 text-red-700 rounded-lg">
+          <p>Failed to load analytics. Please try again later.</p>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+export default function AnalyticsPage() {
+  return (
+    <div className="p-6">
+      <ErrorBoundary>
+        <Suspense fallback={
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        }>
+          <AnalyticsContent />
+        </Suspense>
+      </ErrorBoundary>
+    </div>
+  );
+}

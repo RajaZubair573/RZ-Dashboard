@@ -6,6 +6,13 @@ import { CheckCircle2, Clock, AlertCircle, Plus, Filter, Search, MoreVertical } 
 type Priority = 'low' | 'medium' | 'high';
 type Status = 'todo' | 'in-progress' | 'completed' | 'blocked';
 
+// Type guards
+const isPriority = (value: string): value is Priority => 
+  ['low', 'medium', 'high'].includes(value);
+
+const isStatus = (value: string): value is Status =>
+  ['todo', 'in-progress', 'completed', 'blocked'].includes(value);
+
 interface Task {
   id: string;
   title: string;
@@ -107,16 +114,43 @@ export default function TasksPage() {
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
-  const addTask = () => {
-    if (!newTask.title.trim()) return;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setNewTask(prev => ({
+      ...prev,
+      [name]: name === 'tags' ? value.split(',').map(tag => tag.trim()) : value
+    }));
+  };
+
+  const handleStatusChange = (status: Status) => {
+    setNewTask(prev => ({
+      ...prev,
+      status
+    }));
+  };
+
+  const handlePriorityChange = (priority: Priority) => {
+    setNewTask(prev => ({
+      ...prev,
+      priority
+    }));
+  };
+
+  const addTask = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newTask.title.trim()) {
+      alert('Task title is required');
+      return;
+    }
     
     const task: Task = {
       ...newTask,
       id: Date.now().toString(),
-      tags: newTask.tags
+      tags: Array.isArray(newTask.tags) ? newTask.tags : []
     };
     
-    setTasks([...tasks, task]);
+    setTasks(prevTasks => [...prevTasks, task]);
     setNewTask({ 
       title: '', 
       description: '', 
@@ -205,83 +239,159 @@ export default function TasksPage() {
       {showNewTaskForm && (
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-4">Create New Task</h2>
-          <div className="space-y-4">
+          <form onSubmit={addTask} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <label htmlFor="task-title" className="block text-sm font-medium text-gray-700 mb-1">
+                Title <span className="text-red-500">*</span>
+              </label>
               <input
+                id="task-title"
+                name="title"
                 type="text"
+                required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={newTask.title}
-                onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                onChange={handleInputChange}
                 placeholder="Task title"
+                aria-required="true"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label htmlFor="task-description" className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
               <textarea
+                id="task-description"
+                name="description"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 rows={3}
                 value={newTask.description}
-                onChange={(e) => setNewTask({...newTask, description: e.target.value})}
+                onChange={handleInputChange}
                 placeholder="Task description"
-              />
+                aria-describedby="description-help"
+              ></textarea>
+              <p id="description-help" className="mt-1 text-sm text-gray-500">
+                Add a detailed description of the task
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                <select
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={newTask.status}
-                  onChange={(e) => setNewTask({...newTask, status: e.target.value as Status})}
-                >
-                  <option value="todo">To Do</option>
-                  <option value="in-progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                  <option value="blocked">Blocked</option>
-                </select>
+                <fieldset>
+                  <legend className="block text-sm font-medium text-gray-700 mb-1">Status</legend>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(Object.keys(statusIcons) as Status[]).map((status) => (
+                      <label key={status} className="flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="status"
+                          checked={newTask.status === status}
+                          onChange={() => handleStatusChange(status)}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                        />
+                        <span className="text-sm text-gray-700 capitalize">
+                          {status.replace('-', ' ')}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                <select
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={newTask.priority}
-                  onChange={(e) => setNewTask({...newTask, priority: e.target.value as Priority})}
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
+                <fieldset>
+                  <legend className="block text-sm font-medium text-gray-700 mb-1">Priority</legend>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(Object.keys(priorityColors) as Priority[]).map((priority) => (
+                      <label key={priority} className="flex items-center space-x-2 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="priority"
+                          checked={newTask.priority === priority}
+                          onChange={() => handlePriorityChange(priority)}
+                          className={`h-4 w-4 text-${priority}-600 focus:ring-${priority}-500 border-gray-300`}
+                        />
+                        <span className={`text-sm capitalize ${priorityColors[priority]}`}>
+                          {priority}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
               </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                <label htmlFor="due-date" className="block text-sm font-medium text-gray-700 mb-1">
+                  Due Date
+                </label>
                 <input
+                  id="due-date"
+                  name="dueDate"
                   type="date"
+                  required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   value={newTask.dueDate}
-                  onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                  onChange={handleInputChange}
+                  min={new Date().toISOString().split('T')[0]}
+                  aria-required="true"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="assigned-to" className="block text-sm font-medium text-gray-700 mb-1">
+                  Assigned To
+                </label>
+                <input
+                  id="assigned-to"
+                  name="assignedTo"
+                  type="text"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={newTask.assignedTo}
+                  onChange={handleInputChange}
+                  placeholder="Team member name"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-2">
+            <div>
+              <label htmlFor="task-tags" className="block text-sm font-medium text-gray-700 mb-1">
+                Tags
+              </label>
+              <input
+                id="task-tags"
+                name="tags"
+                type="text"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={Array.isArray(newTask.tags) ? newTask.tags.join(', ') : ''}
+                onChange={handleInputChange}
+                placeholder="e.g., frontend, backend, design"
+                aria-describedby="tags-help"
+              />
+              <p id="tags-help" className="mt-1 text-sm text-gray-500">
+                Separate tags with commas
+              </p>
+            </div>
+
+            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
               <button
+                type="button"
                 onClick={() => setShowNewTaskForm(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Cancel
               </button>
               <button
-                onClick={addTask}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                type="submit"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                disabled={!newTask.title.trim()}
               >
                 Create Task
               </button>
             </div>
-          </div>
+          </form>
         </div>
       )}
 
